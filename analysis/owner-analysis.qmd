@@ -14,7 +14,6 @@ library(tidyr)
 library(janitor)
 ```
 
-
 ```{r}
 lobster_abundance <- read_csv("../data/Lobster_Abundance_All_Years_20220829.csv")
 ```
@@ -23,12 +22,15 @@ lobster_abundance <- read_csv("../data/Lobster_Abundance_All_Years_20220829.csv"
 ## Prints the column names of my data frame
 colnames(lobster_abundance)
 ```
+
 ```{r}
 head(lobster_abundance)
 ```
+
 ```{r}
 summary(lobster_abundance)
 ```
+
 ```{r}
 unique(lobster_abundance)
 
@@ -38,15 +40,18 @@ mutate(SIZE_MM = na_if(SIZE_MM, -99999))
 unique(lobster_clean$SIZE_MM)
 
 ```
+
 ```{r}
 lobster_clean <- lobster_clean %>%
     janitor::clean_names()
 
 colnames(lobster_clean)
 ```
+
 ```{r}
 unique(lobster_clean$site)
 ```
+
 ```{r}
 #lobster_nonapl <- lobster_clean %>%
 #  filter(site %in% c("IVEE", "AQUE", "CARP", "MOHK"))
@@ -56,6 +61,7 @@ not_napl <- lobster_clean %>%
 
 unique(not_napl$site)
 ```
+
 ```{r}
 aque_70mm <- not_napl %>%
   filter(site == "AQUE",
@@ -65,3 +71,118 @@ unique(aque_70mm$site)
 range(aque_70mm$size_mm)
 ```
 
+```{r}
+colnames(lobster_clean)
+```
+
+## Exercise: Data Visualization
+
+```{r}
+ggplot(data = lobster_clean, aes(x = size_mm)) +
+    geom_histogram() +
+    facet_wrap(~site)
+```
+
+```{r}
+lobsters_summarize <- lobster_clean %>% 
+  group_by(site, year) %>% 
+  summarize(count = n())
+```
+
+```{r}
+# line plot
+# ggplot(data = lobsters_summarize, aes(x = year, y = count)) +
+#  geom_line(aes(color = site)) 
+
+# line and point plot
+ggplot(data = lobsters_summarize, aes(x = year, y = count)) +
+  geom_point(aes(color = site)) +
+  geom_line(aes(color = site)) 
+    theme_bw()
+```
+
+### Question 9
+
+\<!--# Go back to your visualization code and add some styling code (aka make your plots pretty!). Again, start with one plot and if there’s time add styling code to additional plots. Here’s a list of functions to help you get started (this is not an exhaustive list!) or revisit the [data visualization lesson](https://learning.nceas.ucsb.edu/2023-04-coreR/session_12.html):
+
+-   `labs()`: modifying axis, legend and plot labels
+
+-   `theme_()`: add a complete theme to your plot (i.e. `theme_light()`)
+
+-   `theme()`: use to customize non-data components of a plot. We’ve listed out some parameters here, but run `?theme` to see the full list (there’s a lot of customization you can do!)
+
+    -   `axis.title.y`
+
+    -   `panel.background`
+
+    -   `plot.background`
+
+    -   `panel.grid.major.*`
+
+    -   `text`
+
+-   `scale_*_date()`: use with dates and update breaks, limits, and labels
+
+-   `scale_*_continuous()`: use with continuous variables and update breaks, limits, and labels
+
+-   `scale_*_discrete()`: use with discrete variables and update breaks, limits, and labels
+
+-   `scales` package: use this within the above scale functions and you can do things like add percents to axes labels
+
+-   `geom_()` within a geom function you can modify:
+
+    -   `fill`: updates fill colors (e.g. column, density, violin, & boxplot interior fill color)
+
+    -   `color`: updates point & border line colors (generally)
+
+    -   `shape`: update point style
+
+    -   `alpha`: update transparency (0 = transparent, 1 = opaque)
+
+    -   `size`: point size or line width
+
+    -   `linetype`: update the line type (e.g. “dotted”, “dashed”, “dotdash”, etc.)
+
+2.  Once you’re happy with how your plot looks, assign it to an object, and save it to the `figs` directory using `ggsave()` --\>
+
+```{r}
+my_theme <- theme_light() +
+    theme(legend.position = "bottom",
+          legend.title = element_blank())
+```
+
+# The below code is wrong
+
+```{r}
+# line and point plot
+ggplot(data = lobsters_summarize, aes(x = year, y = count)) +
+  geom_point(aes(color = site)) +
+  geom_line(aes(color = site)) 
+    labs(title = "Lobster Count by Region by Year",
+         y = "Escapement") +
+    my_theme
+```
+
+### Not done
+
+<!--#  12.5.2 Collaborate on a report and publish using GitHub pages
+The final step! Time to work together again. Collaborate with your partner in lobster-report.qmd to create a report to publish to GitHub pages.
+
+Code Review
+As you’re working on the lobster-report.qmd you will be conducting two types of code reviews: (1) pair programming and (2) lightweight code review.
+
+Pair programming is where two people develop code together at the same workstation. One person is the “driver” and one person is the “navigator”. The driver writes the code while the navigator observes the code being typed, points out any immediate quick fixes, and will also Google / troubleshoot if errors occur. Both the Owner and the Collaborator should experience both roles, so switch halfway through or at a meaningful stopping point.
+
+A lightweight code review is brief and you will be giving feedback on code readability and code logic as you’re adding Owner and Collaborator code from their respective analysis.qmds to the lobster-report.qmd. Think of it as a walk through of your the code for the data visualizations you plan to include in the report (this includes the code you wrote to create the subset for the plot and the code to create the plot) and give quick feedback.
+
+Make sure your Quarto Document is well organized and includes the following elements:
+
+citation of the data
+brief summary of the abstract (i.e. 1-2 sentences) from the EDI Portal
+Owner analysis and visualizations (you choose which plots you want to include)
+add alternative text to your plots
+plots can be added either with the data visualization code or with Markdown syntax - it’s up to you if you want to include the code or not.
+Collaborator analysis and visualizations (you choose which plots you want to include)
+add alternative text to your plots
+plots can be added either with the data visualization code or with Markdown syntax - it’s up to you if you want to include the code or not.
+Finally, publish on GitHub pages (from Owner’s repository). Refer back to Chapter 11 for steps on how to publish using GitHub pages. -->
