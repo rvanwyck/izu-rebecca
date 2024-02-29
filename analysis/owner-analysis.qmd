@@ -11,6 +11,7 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(janitor)
 ```
 
 
@@ -27,5 +28,40 @@ head(lobster_abundance)
 ```
 ```{r}
 summary(lobster_abundance)
+```
+```{r}
+unique(lobster_abundance)
+
+lobster_clean <- lobster_abundance %>%
+mutate(SIZE_MM = na_if(SIZE_MM, -99999))
+
+unique(lobster_clean$SIZE_MM)
+
+```
+```{r}
+lobster_clean <- lobster_clean %>%
+    janitor::clean_names()
+
+colnames(lobster_clean)
+```
+```{r}
+unique(lobster_clean$site)
+```
+```{r}
+#lobster_nonapl <- lobster_clean %>%
+#  filter(site %in% c("IVEE", "AQUE", "CARP", "MOHK"))
+
+not_napl <- lobster_clean %>%
+  filter(site != "NAPL")
+
+unique(not_napl$site)
+```
+```{r}
+aque_70mm <- not_napl %>%
+  filter(site == "AQUE",
+         size_mm > 70)
+
+unique(aque_70mm$site)
+range(aque_70mm$size_mm)
 ```
 
